@@ -1,6 +1,6 @@
 # 🌱 Crop Recommender – Smart AI-Based Crop Advisory System
 
-The**Crop Recommender** is a smart, AI-inspired web application designed to assist farmers in making better agricultural decisions. The system provides crop recommendations based on soil, season, and weather conditions, along with disease detection, market price prediction, and voice-based crop information.
+The **Crop Recommender** is a smart, AI-inspired web application designed to assist farmers in making better agricultural decisions. The system provides crop recommendations based on soil, season, and weather conditions, along with disease detection, market price prediction, and voice-based crop information.
 
 This project is developed as a mini project / academic prototype, focusing on simplicity, usability, and easy understanding. The current version uses HTML, CSS, JavaScript, and Flask, with rule-based backend logic that can be extended to real AI and machine learning models.
 
@@ -28,13 +28,21 @@ Provides simple crop guidance in text form (voice-ready feature).
 **•Backend:** Python (Flask)
 
 # 📁 Project Structure
+
 crop-recommender/
+
 │
+
 ├── app.py
+
 ├── templates/
+
 │   └── index.html
+
 ├── static/
+
 │   └── style.css
+
 └── README.md
 
 # ▶️ How to Run the Project

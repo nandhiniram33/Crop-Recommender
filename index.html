@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Crop Recommender</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Card 1: Crop Recommendation -->
+    <div class="card">
+        <div class="card-header">🌱 Crop Recommender<br><span>Smart AI-Based Crop Advisory System</span></div>
+        <h3>AI-Based Crop Recommendation</h3>
+
+        <label>Soil Type:</label>
+        <select><option>Clay</option></select>
+
+        <label>Season:</label>
+        <select><option>Rainy</option></select>
+
+        <label>Temperature (°C):</label>
+        <input type="number" value="26">
+
+        <button>Recommend Crop</button>
+
+        <p class="output"><b>Recommended Crop:</b> Rice</p>
+    </div>
+
+    <!-- Card 2: Disease Detection -->
+    <div class="card">
+        <div class="card-header">🌱 Crop Recommender<br><span>Smart AI-Based Crop Advisory System</span></div>
+        <h3>Crop Disease Detection</h3>
+
+        <img src="Leaf blight.jpeg" alt="Leaf Image">
+
+        <button>Detect Disease</button>
+
+        <p class="output"><b>Detected Disease:</b> Leaf Blight</p>
+    </div>
+
+    <!-- Card 3: Weather-Based Suggestion -->
+    <div class="card">
+        <div class="card-header">🌱 Crop Recommender<br><span>Smart AI-Based Crop Advisory System</span></div>
+        <h3>Weather-Based Crop Suggestion</h3>
+
+        <label>Rainfall (mm):</label>
+        <input type="number" value="250">
+
+        <button>Suggest Crop</button>
+
+        <p class="output"><b>Suitable Crop:</b> Rice</p>
+    </div>
+
+    <!-- Card 4: Market Price Predictor -->
+    <div class="card">
+        <div class="card-header">🌱 Crop Recommender<br><span>Smart AI-Based Crop Advisory System</span></div>
+        <h3>Market Price Predictor</h3>
+
+        <label>Crop Name:</label>
+        <input type="text" placeholder="Wheat">
+
+        <button>Predict Price</button>
+
+        <p class="output">
+            <b>Expected Wheat Price</b><br>
+            Next Week: ₹2100/quintal
+        </p>
+    </div>
+
+    <!-- Card 5: Voice-Based Info -->
+    <div class="card">
+        <div class="card-header">🌱 Crop Recommender<br><span>Smart AI-Based Crop Advisory System</span></div>
+        <h3>Voice-Based Crop Information</h3>
+
+        <button>🎤 Get Crop Info</button>
+
+        <p class="output">
+            Rice grows well in clay soil with high rainfall and warm climate.
+        </p>
+    </div>
+
+    <script>
+function recommendCrop() {
+    fetch('/recommend_crop', {
+        method: 'POST',
+        body: new URLSearchParams({
+            soil: 'Clay',
+            season: 'Rainy',
+            temperature: 26
+        })
+    })
+    .then(res => res.json())
+    .then(data => alert("Recommended Crop: " + data.crop));
+}
+
+function detectDisease() {
+    fetch('/detect_disease', { method: 'POST' })
+    .then(res => res.json())
+    .then(data => alert("Detected Disease: " + data.disease));
+}
+
+function weatherCrop() {
+    fetch('/weather_crop', {
+        method: 'POST',
+        body: new URLSearchParams({ rainfall: 250 })
+    })
+    .then(res => res.json())
+    .then(data => alert("Suitable Crop: " + data.crop));
+}
+
+function predictPrice() {
+    fetch('/predict_price', {
+        method: 'POST',
+        body: new URLSearchParams({ crop: 'Wheat' })
+    })
+    .then(res => res.json())
+    .then(data => alert("Expected Price: " + data.price));
+}
+
+function cropInfo() {
+    fetch('/crop_info', { method: 'POST' })
+    .then(res => res.json())
+    .then(data => alert(data.info));
+}
+</script>
+
+
+</div>
+
+</body>
+</html>
+

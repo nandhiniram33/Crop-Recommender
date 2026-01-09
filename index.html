@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Crop Recommender</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <div class="app-header">
+        <h1 class="app-name">Smart Crop Recommender</h1>
+        <p class="app-slogan">Grow Smart • Farm Better • Harvest More</p>
+    </div>
+
+<div class="container">
+    <!-- Card 9: Multi-language Toggle (moved to top left) -->
+    <div class="card">
+        <div class="card-header">🌱 Crop Recommender<br><span>Language Support</span></div>
+        <h3>Choose Language</h3>
+        <select id="langSelect" onchange="setLanguage()">
+            <option value="en">English</option>
+            <option value="ta">Tamil</option>
+        </select>
+        <p class="output" id="langOutput"><b>Current Language:</b> <span id="langResult">English</span></p>
+    </div>
+
+    <!-- Card 6: Fertilizer Recommendation -->
+    <div class="card">
+        <div class="card-header">🌱 Crop Recommender<br><span>Fertilizer Recommendation</span></div>
+        <h3>Fertilizer Suggestion</h3>
+        <label>Crop Name:</label>
+        <input type="text" id="fertCropName" placeholder="Rice">
+        <button onclick="fertilizerRecommend()">Suggest Fertilizer</button>
+        <p class="output" id="fertOutput"><b>Recommended Fertilizer:</b> <span id="fertResult">-</span></p>
+    </div>
+
+    <!-- Card 7: Crop Calendar -->
+    <div class="card">
+        <div class="card-header">🌱 Crop Recommender<br><span>Crop Calendar</span></div>
+        <h3>Crop Calendar</h3>
+        <label>Crop Name:</label>
+        <input type="text" id="calendarCropName" placeholder="Rice">
+        <button onclick="showCalendar()">Show Calendar</button>
+        <p class="output" id="calendarOutput"><b>Calendar:</b> <span id="calendarResult">-</span></p>
+    </div>
+
+    <!-- Card 8: Market Price Chart (static) -->
+    <div class="card">
+        <div class="card-header">🌱 Crop Recommender<br><span>Market Price Trends</span></div>
+        <h3>Market Price Chart</h3>
+        <canvas id="priceChart" width="220" height="120" style="margin-top:10px;"></canvas>
+    </div>
+
+    <!-- Card 10: Location-Based Crop Suggestion -->
+    <div class="card">
+        <div class="card-header">🌱 Crop Recommender<br><span>Location-Based Suggestion</span></div>
+        <h3>Location Crop Suggestion</h3>
+        <button onclick="getLocationCrop()">Suggest Crop for My Location</button>
+        <p class="output" id="locOutput"><b>Suggested Crop:</b> <span id="locResult">-</span></p>
+    </div>
+
+    <!-- Card 1: Crop Recommendation -->
+    <div class="card">
+        <div class="card-header">🌱 Crop Recommender<br><span>Smart AI-Based Crop Advisory System</span></div>
+        <h3>AI-Based Crop Recommendation</h3>
+
+        <label>Soil Type:</label>
+        <select id="soilType"><option>Clay</option><option>Sandy</option><option>Loam</option></select>
+
+        <label>Season:</label>
+        <select id="season"><option>Rainy</option><option>Summer</option><option>Winter</option></select>
+
+        <label>Temperature (°C):</label>
+        <input type="number" id="temperature" value="26">
+
+        <button onclick="recommendCrop()">Recommend Crop</button>
+
+        <p class="output" id="cropOutput"><b>Recommended Crop:</b> <span id="cropResult">-</span></p>
+    </div>
+
+    <!-- Card 2: Disease Detection -->
+    <div class="card">
+        <div class="card-header">🌱 Crop Recommender<br><span>Smart AI-Based Crop Advisory System</span></div>
+        <h3>Crop Disease Detection</h3>
+
+        <img src="/static/leaf_sample.jpg" alt="Leaf Image" id="diseaseImage" style="max-width:100%;margin-bottom:10px;">
+        <input type="file" id="leafUpload" accept="image/*" style="margin-bottom:10px;">
+        <button onclick="detectDisease()">Detect Disease</button>
+        <p class="output" id="diseaseOutput"><b>Detected Disease:</b> <span id="diseaseResult">-</span></p>
+    </div>
+
+    <!-- Card 3: Weather-Based Suggestion -->
+    <div class="card">
+        <div class="card-header">🌱 Crop Recommender<br><span>Smart AI-Based Crop Advisory System</span></div>
+        <h3>Weather-Based Crop Suggestion</h3>
+
+        <label>Rainfall (mm):</label>
+        <input type="number" id="rainfall" value="250">
+
+        <button onclick="weatherCrop()">Suggest Crop</button>
+
+        <p class="output" id="weatherOutput"><b>Suitable Crop:</b> <span id="weatherResult">-</span></p>
+    </div>
+
+    <!-- Card 4: Market Price Predictor -->
+    <div class="card">
+        <div class="card-header">🌱 Crop Recommender<br><span>Smart AI-Based Crop Advisory System</span></div>
+        <h3>Market Price Predictor</h3>
+
+        <label>Crop Name:</label>
+        <input type="text" id="cropName" placeholder="Wheat">
+
+        <button onclick="predictPrice()">Predict Price</button>
+
+        <p class="output" id="priceOutput">
+            <b>Expected Price:</b> <span id="priceResult">-</span>
+        </p>
+    </div>
+
+    <!-- Card 5: Voice-Based Info -->
+    <div class="card">
+        <div class="card-header">🌱 Crop Recommender<br><span>Smart AI-Based Crop Advisory System</span></div>
+        <h3>Voice-Based Crop Information</h3>
+
+        <label>Crop Name:</label>
+        <input type="text" id="infoCropName" placeholder="Rice">
+        <button onclick="cropInfo()">🎤 Get Crop Info</button>
+
+        <p class="output" id="infoOutput">
+            <b>Crop Info:</b> <span id="infoResult">-</span>
+        </p>
+    </div>
+
+    <script>
+// Helper: display loading, success, and errors
+function setResult(id, text, extra=null) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = text;
+    // update debug banner
+    const banner = document.getElementById('debugBanner');
+    if (banner) banner.textContent = `Last response for ${id}: ${text}`;
+    if (extra && typeof extra === 'object') {
+        // show saved status if present
+        if (extra.saved !== undefined) {
+            el.textContent += ` (${extra.saved ? 'saved' : 'not saved'})`;
+            if (banner) banner.textContent += ` — saved:${extra.saved}`;
+        }
+        if (extra.warning) {
+            el.textContent += ` — ${extra.warning}`;
+            if (banner) banner.textContent += ` — ${extra.warning}`;
+        }
+        if (extra.image_url) {
+            // show a small link
+            const a = document.createElement('a');
+            a.href = extra.image_url;
+            a.textContent = ' View image';
+            a.target = '_blank';
+            el.appendChild(a);
+            if (banner) banner.textContent += ' — image uploaded';
+        }
+    }
+    console.debug('setResult', id, text, extra);
+}
+
+function showError(id, err) {
+    console.error(err);
+    setResult(id, 'Error: ' + (err.message || err));
+}
+
+// Fertilizer Recommendation
+function fertilizerRecommend() {
+    const crop = document.getElementById('fertCropName').value.trim();
+    const lang = document.getElementById('langSelect')?.value || 'en';
+    setResult('fertResult', 'Loading...');
+    fetch('/recommend_fertilizer', {
+        method: 'POST',
+        body: new URLSearchParams({ crop: crop, lang: lang })
+    })
+    .then(res => res.json())
+    .then(data => setResult('fertResult', data.fertilizer))
+    .catch(err => showError('fertResult', err));
+}
+
+// Crop Calendar
+function showCalendar() {
+    const crop = document.getElementById('calendarCropName').value.trim();
+    const lang = document.getElementById('langSelect')?.value || 'en';
+    setResult('calendarResult', 'Loading...');
+    fetch('/crop_calendar', {
+        method: 'POST',
+        body: new URLSearchParams({ crop: crop, lang: lang })
+    })
+    .then(res => res.json())
+    .then(data => setResult('calendarResult', data.calendar))
+    .catch(err => showError('calendarResult', err));
+}
+
+// Market Price Chart (static demo)
+window.onload = function() {
+    if (window.Chart) {
+        drawPriceChart();
+    } else {
+        var script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+        script.onload = drawPriceChart;
+        document.head.appendChild(script);
+    }
+    // setup file preview
+    const fileInput = document.getElementById('leafUpload');
+    if (fileInput) {
+        fileInput.addEventListener('change', function(e) {
+            const preview = document.getElementById('diseaseImage');
+            if (this.files && this.files[0]) {
+                const url = URL.createObjectURL(this.files[0]);
+                preview.src = url;
+            }
+        });
+    }
+}
+function drawPriceChart() {
+    var ctx = document.getElementById('priceChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Rice Price',
+                data: [2100, 2200, 2150, 2250, 2300, 2280],
+                borderColor: '#43cea2',
+                backgroundColor: 'rgba(67,206,162,0.1)',
+                fill: true,
+                tension: 0.3
+            }]
+        },
+        options: {
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: false } }
+        }
+    });
+}
+
+// Multi-language Toggle
+function setLanguage() {
+    const lang = document.getElementById('langSelect').value;
+    document.getElementById('langResult').textContent = lang === 'en' ? 'English' : 'Tamil';
+    document.getElementById('infoCropName').placeholder = lang === 'en' ? 'Rice' : 'அரிசி';
+}
+
+// Location-Based Crop Suggestion
+function getLocationCrop() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(pos) {
+            setResult('locResult', 'Loading...');
+            fetch('/location_crop', {
+                method: 'POST',
+                body: new URLSearchParams({ latitude: pos.coords.latitude })
+            })
+            .then(res => res.json())
+            .then(data => setResult('locResult', data.crop))
+            .catch(err => showError('locResult', err));
+        }, function() {
+            setResult('locResult', 'Location not available');
+        });
+    } else {
+        setResult('locResult', 'Geolocation not supported');
+    }
+}
+
+function recommendCrop() {
+    const soil = document.getElementById('soilType').value;
+    const season = document.getElementById('season').value;
+    const temperature = document.getElementById('temperature').value;
+    const lang = document.getElementById('langSelect')?.value || 'en';
+    setResult('cropResult', 'Loading...');
+    fetch('/recommend_crop', {
+        method: 'POST',
+        body: new URLSearchParams({
+            soil: soil,
+            season: season,
+            temperature: temperature,
+            lang: lang
+        })
+    })
+    .then(res => res.json())
+    .then(data => setResult('cropResult', data.crop, data))
+    .catch(err => showError('cropResult', err));
+}
+
+function detectDisease() {
+    const fileInput = document.getElementById('leafUpload');
+    if (!fileInput.files || fileInput.files.length === 0) {
+        setResult('diseaseResult', 'Please upload an image.');
+        return;
+    }
+    const formData = new FormData();
+    formData.append('image', fileInput.files[0]);
+    setResult('diseaseResult', 'Analyzing...');
+    fetch('/detect_disease', {
+        method: 'POST',
+        body: formData
+    })
+    .then(async res => {
+        const data = await res.json().catch(() => ({error: 'Invalid JSON response'}));
+        if (res.ok) setResult('diseaseResult', data.disease || data.error, data);
+        else setResult('diseaseResult', data.error || 'Error from server');
+    })
+    .catch(err => showError('diseaseResult', err));
+}
+
+function weatherCrop() {
+    const rainfall = document.getElementById('rainfall').value;
+    const lang = document.getElementById('langSelect')?.value || 'en';
+    setResult('weatherResult', 'Loading...');
+    fetch('/weather_crop', {
+        method: 'POST',
+        body: new URLSearchParams({ rainfall: rainfall, lang: lang })
+    })
+    .then(res => res.json())
+    .then(data => setResult('weatherResult', data.crop, data))
+    .catch(err => showError('weatherResult', err));
+}
+
+function predictPrice() {
+    const crop = document.getElementById('cropName').value;
+    setResult('priceResult', 'Loading...');
+    fetch('/predict_price', {
+        method: 'POST',
+        body: new URLSearchParams({ crop: crop })
+    })
+    .then(res => res.json())
+    .then(data => setResult('priceResult', data.price, data))
+    .catch(err => showError('priceResult', err));
+}
+
+function cropInfo() {
+    const crop = document.getElementById('infoCropName').value;
+    const lang = document.getElementById('langSelect')?.value || 'en';
+    setResult('infoResult', 'Loading...');
+    fetch('/crop_info', {
+        method: 'POST',
+        body: new URLSearchParams({ crop: crop, lang: lang })
+    })
+    .then(res => res.json())
+    .then(data => {
+        setResult('infoResult', data.info, data);
+        // Speak the info aloud
+        if ('speechSynthesis' in window && data.info) {
+            const utter = new SpeechSynthesisUtterance(data.info);
+            const langSel = document.getElementById('langSelect')?.value || 'en';
+            const voices = window.speechSynthesis.getVoices();
+            if (langSel === 'ta') {
+                utter.lang = 'ta-IN';
+                const taVoice = voices.find(v => v.lang === 'ta-IN' || v.lang.startsWith('ta'));
+                if (taVoice) utter.voice = taVoice;
+            } else {
+                utter.lang = 'en-US';
+                const enVoice = voices.find(v => v.lang === 'en-US' || v.lang.startsWith('en'));
+                if (enVoice) utter.voice = enVoice;
+            }
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(utter);
+        }
+    })
+    .catch(err => showError('infoResult', err));
+}
+    </script>
+</div>
+
+</body>
+</html>
